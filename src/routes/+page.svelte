@@ -8,6 +8,18 @@
 
   export let data: PageData;
 
+  let form = {
+    searchString: "",
+  };
+
+  let searchString = "";
+
+  // $: searchString = form.searchString;
+
+  $: selectedMonsters = data.monsters.filter((monster) =>
+    monster.name.toLowerCase().includes(searchString.toLocaleLowerCase())
+  );
+
   $: monsterId = $page.url.searchParams.get("monsterId") || "";
   $: monster = data.monsters.find((monster) => monster.id === monsterId);
 
@@ -18,6 +30,12 @@
     const searchParams = new URLSearchParams($page.url.searchParams);
     searchParams.set(key, value);
     goto(`?${searchParams.toString()}`);
+  };
+
+
+  const submitSearch = (e: Event) => {
+    e.preventDefault();
+    searchString = form.searchString;
   };
 </script>
 
@@ -37,8 +55,17 @@
   {/each}
 </div>
 
+<form on:submit={submitSearch} class="search-form">
+  <input
+    type="text"
+    bind:value={form.searchString}
+    placeholder="Pokémon Name"
+  />
+  <input class="submit-btn" type="submit" value="Search" />
+</form>
+
 <div class="monsters">
-  {#each data.monsters as monster (monster.id)}
+  {#each selectedMonsters as monster (monster.id)}
     <Monster {monster} isInteractive {updateSearchParams} />
   {/each}
 </div>
@@ -65,5 +92,38 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .search-form {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  .search-form input[type="text"] {
+    padding: 5px 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    width: 60%;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+  .search-form input[type="text"]::placeholder {
+    color: #888;
+  }
+  .search-form input[type="text"]:focus {
+    outline: none;
+    border: 1px solid #aaa;
+  }
+  .search-form input[type="submit"] {
+    padding: 5px 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin-left: 10px;
+    background-color: #666;
+    color: #fff;
+    cursor: pointer;
+  }
+  .search-form input[type="submit"]:hover {
+    background-color: #444;
   }
 </style>

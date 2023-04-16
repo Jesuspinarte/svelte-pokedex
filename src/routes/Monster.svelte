@@ -14,7 +14,8 @@
   >
     <div class="monster-content">
       <img src={monster.image} alt={monster.name} />
-      {monster.name}
+      {monster.name[0].toUpperCase() +
+        monster.name.substring(1).toLocaleLowerCase()}
     </div>
   </div>
   <div class="monster-id">
