@@ -14,6 +14,7 @@
 
   let searchString = "";
 
+  // Uncomment this to enable search on type.
   // $: searchString = form.searchString;
 
   $: selectedMonsters = data.monsters.filter((monster) =>
@@ -26,15 +27,15 @@
   $: monsterId2 = $page.url.searchParams.get("monsterId2") || "";
   $: monster2 = data.monsters.find((monster) => monster.id === monsterId2);
 
+  $: selectedGenerationId = $page.url.searchParams.get("generation-id") || "";
+
   const updateSearchParams = (key: string, value: string) => {
     const searchParams = new URLSearchParams($page.url.searchParams);
     searchParams.set(key, value);
     goto(`?${searchParams.toString()}`);
   };
 
-
   const submitSearch = (e: Event) => {
-    e.preventDefault();
     searchString = form.searchString;
   };
 </script>
@@ -48,14 +49,26 @@
 {/if}
 
 <div class="generations">
+  <button
+    class="generation"
+    class:active={selectedGenerationId === "all"}
+    on:click={() => updateSearchParams("generation-id", "all")}
+  >
+    All
+  </button>
   {#each generations as generation (generation.id)}
-    <div class="generation">
+    <button
+      class="generation"
+      class:active={selectedGenerationId === generation.id.toString()}
+      on:click={() =>
+        updateSearchParams("generation-id", generation.id.toString())}
+    >
       {generation.main_region}
-    </div>
+    </button>
   {/each}
 </div>
 
-<form on:submit={submitSearch} class="search-form">
+<form on:submit|preventDefault={submitSearch} class="search-form">
   <input
     type="text"
     bind:value={form.searchString}
@@ -79,13 +92,21 @@
   }
   .generation {
     margin: 5px;
-    padding: 5px 10px;
-    border: 1px solid black;
-    background-color: #bbb;
-    color: #222;
+    padding: 8px 24px;
+    border-radius: 4px;
+    border: 0;
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+  }
+  .generation.active {
+    background-color: #555;
   }
   .generation:hover {
-    background-color: #eee;
+    background-color: #666;
+  }
+  .generation.active:hover {
+    background-color: #888;
   }
   .monsters {
     display: flex;

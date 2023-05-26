@@ -42,6 +42,7 @@
   }
   .monster {
     width: 130px;
+    min-height: 150px;
     margin: 10px;
     padding: 10px;
     position: relative;
